@@ -1,0 +1,4 @@
+* eventstore-clj
+** Current Goals
+- Implement examples from JVM client [[https://github.com/EventStore/EventStore.JVM/blob/master/README.md][README]] in Clojure (via interop)
+- Create wrapper functions that abstract over the interop
