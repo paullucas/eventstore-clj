@@ -1,6 +1,7 @@
 (ns eventstore-clj.event
   (:import [eventstore.j EventDataBuilder]
-           java.util.UUID))
+           java.util.UUID)
+  (:require [clojure.data.json :as json]))
 
 (defn build-event
   ([type] (.build (EventDataBuilder. "empty")))
@@ -24,3 +25,23 @@
   (build-event "binary" (byte-array 4 [1 2 3 4]) (byte-array 4 [5 6 7 8]))
   (build-event "string" "data" "metadata")
   (build-event "json" "{\"data\":\"data\"}" "{\"metadata\":\"metadata\"}"))
+
+(defn event->map [event]
+  (-> event
+      .data
+      .data
+      .value
+      (.decodeString "UTF-8")
+      (json/read-str :key-fn keyword)))
+
+(defn content->map [event]
+  (-> event
+      .data
+      .value
+      (.decodeString "UTF-8")
+      (json/read-str :key-fn keyword)))
+
+(comment
+  (content->map (build-event "json"
+                             "{\"data\":\"data\"}"
+                             "{\"metadata\":\"metadata\"}")))

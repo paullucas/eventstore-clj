@@ -4,7 +4,8 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/core.async "0.3.442"]
                  [com.geteventstore/eventstore-client_2.12 "3.0.7"]
-                 [t6/from-scala "0.3.0"]]
+                 [t6/from-scala "0.3.0"]
+                 [org.clojure/data.json "0.2.6"]]
   :uberjar-merge-with {#"\.properties$" [slurp str spit] ;; https://github.com/deeplearning4j/deeplearning4j/issues/482
                        "reference.conf" [slurp str spit]}
   :main eventstore-clj.core)
