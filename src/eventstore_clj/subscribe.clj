@@ -4,7 +4,21 @@
            eventstore.PersistentSubscriptionActor
            eventstore.EventNumber
            akka.actor.Props
-           scala.Option))
+           scala.Option
+           ;; actor macro
+           [akka.actor ActorSystem Props UntypedActor]
+           akka.japi.Creator
+           akka.pattern.Patterns)
+  (:require [clojure.core.async :refer [chan go go-loop <! >! <!!]]))
+
+(defmacro actor
+  "Macro used to define an actor without generating classes.
+  Returns a Props object that can be passed to the .actorOf method of ActorSystem."
+  [& forms]
+  `(Props/create ~UntypedActor (proxy [Creator] []
+                                 (~'create []
+                                  (proxy [UntypedActor] []
+                                    ~@forms)))))
 
 (defrecord PersistentSubscription [subscription-actor observer-actor])
 (defrecord Subscription [subscription-actor observer-actor])
@@ -45,3 +59,9 @@
                                                (Option/apply creds)
                                                read-batch-size))]
     (Subscription. subscription-actor observer-actor)))
+
+(defn subscribe-chan [conn stream-name channel]
+  (subscribe conn stream-name
+             (actor
+              (onReceive [message]
+                         (go (>! channel message))))))
